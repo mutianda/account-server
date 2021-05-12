@@ -1,36 +1,25 @@
-var { conn ,app,Result}  = require('../app')
+var { conn ,app,Result}  = require('../index')
 const tree = {}
 app.post('/getRecord',  (req, res) => {
 	console.log('add');
-	let {pid , reason='',nemo=''} = req.body
-	if(!reason||!pid){
-		res.json(new Result({code:0,msg:'参数不完整'}))
-	}
+	let {startTime='' , endTime=''} = req.body
 	let sql = `select * from account_record`
 	conn(sql).then(row=>{
 		if(row){
-			computeTree(tree,row,0)
-			res.json(new Result({data:tree,msg:'新增成功'}))
+			res.json(new Result({data:row,msg:'新增成功'}))
 		}
 	}).catch(e=>{
 		res.json(new Result({data:e,msg:'查询error'}))
 	})
 })
-function computeTree(tree,list,val){
-	console.log(list);
-	tree.children = list.filter(item=>item.pid == val)
-	console.log(tree.children);
-	tree.children.forEach(item=>{
-		computeTree(item,list,item.id)
-	})
-}
+
 app.post('/addRecord',  (req, res) => {
 	console.log('add');
-	let {pid , reason='',nemo=''} = req.body
+	let {money ,time, reason='',desc=''} = req.body
 	if(!reason||!pid){
 		res.json(new Result({code:0,msg:'参数不完整'}))
 	}
-	let sql = `INSERT INTO account_record (pid,reason,nemo) VALUES ( ${pid},${reason},${nemo})`
+	let sql = `INSERT INTO account_record (account_reason,account_desc,account_time,account_money) VALUES ( ${reason},${desc},${time},${money})`
 	conn(sql).then(row=>{
 		if(row){
 			res.json(new Result({data:row,msg:'新增成功'}))
@@ -41,8 +30,8 @@ app.post('/addRecord',  (req, res) => {
 
 })
 app.post('/updateRecord',  (req, res) => {
-	let {pid , id,reason,nemo} = req.body
-	let sql = `UPDATE  account_record set reason = ${'\''+reason+'\''},nemo = ${'\''+nemo+'\''} where id = ${id}`
+	let {money ,time, reason='',desc=''} = req.body
+	let sql = `UPDATE  account_record set account_reason = ${'\''+reason+'\''},account_desc = ${'\''+desc+'\''},account_money = ${'\''+money+'\''} where id = ${id}`
 	conn(sql).then(row=>{
 		if(row){
 			res.json(new Result({data:row,msg:'编辑成功'}))

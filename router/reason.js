@@ -1,19 +1,16 @@
-var { conn ,app,Result}  = require('../app')
-
+var { conn ,app,Result}  = require('../index')
+let  tree = {}
 app.post('/getReason',  (req, res) => {
 	console.log('add');
-	let {pid , reason='',nemo=''} = req.body
-	if(!reason||!pid){
-		res.json(new Result({code:0,msg:'参数不完整'}))
-	}
 	let sql = `select * from account_reason`
 	conn(sql).then(row=>{
 		if(row){
 			computeTree(tree,row,0)
 			console.log(row,tree);
-			res.json(new Result({data:tree,msg:'新增成功'}))
+			res.json(new Result({data:tree,msg:'查询成功'}))
 		}
 	}).catch(e=>{
+		console.log(e);
 		res.json(new Result({data:e,msg:'查询error'}))
 	})
 })
