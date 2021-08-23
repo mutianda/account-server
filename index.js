@@ -25,7 +25,7 @@ var server = app.listen(3030,function(){
 	var port = server.address().port;
 	console.log('listen at http://%s:%s',host,port)
 })
-function Result ({ code = 1, msg = '', data = '' }) {
+function Result ({ code = 200, msg = '', data = '' }) {
 	this.code = code;
 	this.msg = msg;
 	this.data = data;
