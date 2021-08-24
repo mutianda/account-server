@@ -5,9 +5,9 @@ app.post('/getReason',  (req, res) => {
 	let sql = `select * from account_reason`
 	conn(sql).then(row=>{
 		if(row){
-			computeTree(tree,row,0)
+			// computeTree(tree,row,0)
 			console.log(row,tree);
-			res.json(new Result({data:tree,msg:'查询成功'}))
+			res.json(new Result({data:row,msg:'查询成功'}))
 		}
 	}).catch(e=>{
 		console.log(e);
@@ -24,17 +24,17 @@ function computeTree(tree,list,val){
 }
 app.post('/addReason',  (req, res) => {
 	console.log('add');
-	let {pid , reason='',nemo=''} = req.body
+	let {pid , reason='',nemo='备注'} = req.body
 	if(!reason||!pid){
 		res.json(new Result({code:0,msg:'参数不完整'}))
 	}
-	let sql = `INSERT INTO account_reason (pid,reason,nemo) VALUES ( ${pid},${reason},${nemo})`
+	let sql = `INSERT INTO account_reason (pid,reason) VALUES ( ${pid},${'\''+reason+'\''})`
 	conn(sql).then(row=>{
 		if(row){
 			res.json(new Result({data:row,msg:'新增成功'}))
 		}
 	}).catch(e=>{
-		res.json(new Result({data:e,msg:'查询error'}))
+		res.json(new Result({data:e,msg:'查询error',code:500}))
 	})
 
 })
