@@ -1,29 +1,29 @@
 var { conn ,app,Result}  = require('../index')
 let  tree = {}
 app.post('/getReason',  (req, res) => {
-	console.log('add');
+
 	let sql = `select * from account_reason`
 	conn(sql).then(row=>{
 		if(row){
 			// computeTree(tree,row,0)
-			console.log(row,tree);
+
 			res.json(new Result({data:row,msg:'查询成功'}))
 		}
 	}).catch(e=>{
-		console.log(e);
+
 		res.json(new Result({data:e,msg:'查询error'}))
 	})
 })
 function computeTree(tree,list,val){
-	console.log(list);
+
 	tree.children = list.filter(item=>item.pid == val)
-	console.log(tree.children);
+
 	tree.children.forEach(item=>{
 		computeTree(item,list,item.id)
 	})
 }
 app.post('/addReason',  (req, res) => {
-	console.log('add');
+
 	let {pid , reason='',nemo='备注'} = req.body
 	if(!reason||!pid){
 		res.json(new Result({code:0,msg:'参数不完整'}))

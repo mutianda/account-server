@@ -1,7 +1,7 @@
 var { conn ,app,Result}  = require('../index')
 const tree = {}
 app.post('/getRecord',  (req, res) => {
-	console.log('add');
+
 	let {startTime='' , endTime='',reason='',desc=''} = req.body
 	let sql = `select * from account_record where account_time > ${startTime} and account_time < ${endTime}   `
 	if(desc){
@@ -11,7 +11,7 @@ app.post('/getRecord',  (req, res) => {
 		sql +=`and account_reason = '${reason}' `
 	}
 	sql+=` order by  account_time desc`
-	console.log(sql);
+
 	conn(sql).then(row=>{
 		if(row){
 			res.json(new Result({data:row,msg:'查询成功'}))
@@ -22,7 +22,7 @@ app.post('/getRecord',  (req, res) => {
 })
 
 app.post('/addRecord',  (req, res) => {
-	console.log('add');
+
 	let {money ,time, reason='',nemo=''} = req.body
 	if(!time){
 		res.json(new Result({code:0,msg:'参数不完整'}))

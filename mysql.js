@@ -42,7 +42,6 @@ let query = function(sql, data){
                     conncetion.release()
                 })
             }else {
-                console.log(err)
                 reject(err)
             }
         })
