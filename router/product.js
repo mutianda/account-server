@@ -1,13 +1,17 @@
 var { conn ,app,Result}  = require('../index')
-let  tree = {}
+let  tree = {
+	id:0,
+	name:'全部'
+}
 app.post('/getProduct',  (req, res) => {
 
 	let sql = `select * from product_name`
 	conn(sql).then(row=>{
 		if(row){
-			// computeTree(tree,row,0)
 
-			res.json(new Result({data:row,msg:'查询成功'}))
+			 computeTree(tree,row,0)
+
+			res.json(new Result({data:tree,msg:'查询成功'}))
 		}
 	}).catch(e=>{
 
@@ -21,14 +25,15 @@ function computeTree(tree,list,val){
 	tree.children.forEach(item=>{
 		computeTree(item,list,item.id)
 	})
+	return tree
 }
 app.post('/addProduct',  (req, res) => {
 
-	let {name} = req.body
+	let {name,pid=0} = req.body
 	if(!name){
 		res.json(new Result({code:0,msg:'参数不完整'}))
 	}
-	let sql = `INSERT INTO product_name (name) VALUES ( ${'\''+name+'\''})`
+	let sql = `INSERT INTO product_name (name,pid) VALUES ( ${'\''+name+'\''},${pid})`
 	conn(sql).then(row=>{
 		if(row){
 			res.json(new Result({data:row,msg:'新增成功'}))
