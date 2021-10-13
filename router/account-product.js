@@ -1,16 +1,15 @@
 var { conn ,app,Result}  = require('../index')
 let  tree = {}
 app.post('/getAccountProduct',  (req, res) => {
-	let {name='' , type='',keyword=''} = req.body
-	let sql = `select * from account_product  where pro_name !='' `
-	if(name){
-		sql +=` and pro_name =  '${name}'    `
-	}
+	let {pid, type='',keyword=''} = req.body
+	let sql = `select A.*,B.name as rack_name from account_product A left join rack_name B  on (A.rack_id=B.id) where A.pro_name !='' `
 	if(type){
-		sql +=`and pro_type = '${type}' `
+		sql +=`and A.pro_type = '${type}' `
 	}
 	if(keyword){
-		sql +=`and pro_name LIKE '%${keyword}%' `
+		sql +=`and A.pro_name LIKE '%${keyword}%' `
+	}else {
+		sql +=`and A.rack_id = '${pid}' `
 	}
 	conn(sql).then(row=>{
 		if(row){
@@ -33,11 +32,11 @@ function computeTree(tree,list,val){
 }
 app.post('/addAccountProduct',  (req, res) => {
 
-	let {name,price=0,num=0,type} = req.body
+	let {name,price=0,num=0,type,pid,sort=0} = req.body
 	if(!name){
 		res.json(new Result({code:0,msg:'参数不完整'}))
 	}
-	let sql = `INSERT INTO account_product (pro_name , pro_price , pro_num , pro_type) VALUES ( ${'\''+name+'\''} , ${'\''+price+'\''} ,${'\''+num+'\''},${'\''+type+'\''})`
+	let sql = `INSERT INTO account_product (pro_name ,rack_id, pro_price , pro_num , pro_type,sort) VALUES ( ${'\''+name+'\''} , ${'\''+pid+'\''} , ${'\''+price+'\''} ,${'\''+num+'\''},${'\''+type+'\''},${'\''+sort+'\''})`
 	conn(sql).then(row=>{
 		if(row){
 			res.json(new Result({data:row,msg:'新增成功'}))
@@ -47,25 +46,10 @@ app.post('/addAccountProduct',  (req, res) => {
 	})
 
 })
-app.post('/addAccountProductByList',  (req, res) => {
 
-	let {list} = req.body
-	if(!list.length){
-		res.json(new Result({code:0,msg:'参数不完整'}))
-	}
-	let sql = `INSERT INTO account_product (pro_name , pro_price , pro_num , pro_type) VALUES ( ${'\''+name+'\''} , ${'\''+price+'\''} ,${'\''+num+'\''},${'\''+type+'\''})`
-	conn(sql).then(row=>{
-		if(row){
-			res.json(new Result({data:row,msg:'新增成功'}))
-		}
-	}).catch(e=>{
-		res.json(new Result({data:e,msg:'查询error',code:500}))
-	})
-
-})
 app.post('/updateAccountProduct',  (req, res) => {
-	let {name,price=0,num=0,type,id} = req.body
-	let sql = `UPDATE  account_product set pro_name = ${'\''+name+'\''},pro_price = ${'\''+price+'\''},pro_num = ${'\''+num+'\''},pro_type = ${'\''+type+'\''} where id = ${id}`
+	let {name,price=0,num=0,type,id,sort=0} = req.body
+	let sql = `UPDATE  account_product set pro_name = ${'\''+name+'\''},pro_price = ${'\''+price+'\''},pro_num = ${'\''+num+'\''},pro_type = ${'\''+type+'\''}, sort = '${sort}' where id = ${id}`
 	conn(sql).then(row=>{
 		if(row){
 			res.json(new Result({data:row,msg:'编辑成功'}))
